@@ -1,0 +1,6 @@
+{% extends "base.html" %}{% block body %}
+<h2>Hệ thống Quản lý Đội xe</h2>
+<div class="cards">
+<div class="card"><b>{{ s.v }}</b>Số xe</div><div class="card"><b>{{ s.d }}</b>Tài xế</div>
+<div class="card"><b>{{ s.t }}</b>Chuyến đã lên lịch</div><div class="card"><b>{{ s.m }}</b>Bảo dưỡng sắp đến hạn (30 ngày)</div>
+</div>{% endblock %}

@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% block body %}<h2>Quản lý xe</h2>
+<form class="add" method="post"><input name="plate" placeholder="Biển số" required maxlength="20"><input name="model" placeholder="Hãng/Dòng xe" required>
+<input name="year" type="number" min="1990" max="2100" placeholder="Năm" required>
+<select name="status"><option value="active">Hoạt động</option><option value="maintenance">Bảo dưỡng</option><option value="retired">Ngưng</option></select><button>Thêm xe</button></form>
+<table><tr><th>ID</th><th>Biển số</th><th>Dòng xe</th><th>Năm</th><th>Trạng thái</th><th></th></tr>
+{% for r in rows %}<tr><td>{{ r.id }}</td><td>{{ r.plate }}</td><td>{{ r.model }}</td><td>{{ r.year }}</td><td>{{ r.status }}</td>
+<td><form method="post" action="/vehicles/{{ r.id }}/delete"><button>Xóa</button></form></td></tr>{% endfor %}</table>{% endblock %}

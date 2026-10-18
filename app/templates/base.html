@@ -1,0 +1,15 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8"><title>Fleet Manager</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+body{font-family:system-ui,sans-serif;margin:0;background:#f4f6f9;color:#1f2937}
+nav{background:#0f3d66;padding:12px 24px}nav a{color:#fff;margin-right:20px;text-decoration:none;font-weight:600}
+main{max-width:1000px;margin:24px auto;padding:0 16px}
+table{width:100%;border-collapse:collapse;background:#fff}th,td{padding:8px 10px;border-bottom:1px solid #e5e7eb;text-align:left}
+th{background:#e8eef5}form.add{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
+input,select,button{padding:7px 10px;border:1px solid #cbd5e1;border-radius:6px}button{background:#0f3d66;color:#fff;cursor:pointer}
+.cards{display:flex;gap:16px;flex-wrap:wrap}.card{background:#fff;padding:20px;border-radius:10px;min-width:180px;box-shadow:0 1px 3px #0002}
+.card b{font-size:32px;display:block}
+</style></head><body>
+<nav><a href="/">Tổng quan</a><a href="/vehicles">Xe</a><a href="/drivers">Tài xế</a><a href="/maintenance">Bảo dưỡng</a><a href="/trips">Lịch trình</a>
+<a href="/grafana/" style="float:right">Grafana</a></nav>
+<main>{% block body %}{% endblock %}</main></body></html>

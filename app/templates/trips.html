@@ -1,0 +1,7 @@
+{% extends "base.html" %}{% block body %}<h2>Lịch trình</h2>
+<form class="add" method="post"><select name="vehicle_id">{% for v in vehicles %}<option value="{{ v.id }}">{{ v.plate }}</option>{% endfor %}</select>
+<select name="driver_id">{% for d in drivers %}<option value="{{ d.id }}">{{ d.name }}</option>{% endfor %}</select>
+<input name="origin" placeholder="Điểm đi" required><input name="destination" placeholder="Điểm đến" required><input name="depart_at" type="datetime-local" required><button>Tạo chuyến</button></form>
+<table><tr><th>Xe</th><th>Tài xế</th><th>Tuyến</th><th>Khởi hành</th><th>Trạng thái</th><th></th></tr>
+{% for r in rows %}<tr><td>{{ r.plate }}</td><td>{{ r.driver }}</td><td>{{ r.origin }} → {{ r.destination }}</td><td>{{ r.depart_at }}</td><td>{{ r.status }}</td>
+<td><form method="post" action="/trips/{{ r.id }}/status"><select name="status"><option>planned</option><option>running</option><option>done</option></select><button>Cập nhật</button></form></td></tr>{% endfor %}</table>{% endblock %}

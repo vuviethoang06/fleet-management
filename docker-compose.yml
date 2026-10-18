@@ -1,0 +1,79 @@
+# Đề 30 - Fleet Management System | Triển khai bằng Docker Compose
+x-hardening: &hardening
+  security_opt: ["no-new-privileges:true"]
+  cap_drop: ["ALL"]
+  restart: unless-stopped
+
+services:
+  # ---------- COMMIT 1: Ứng dụng + Database + Nginx ----------
+  db:
+    <<: *hardening
+    image: postgres:16-alpine
+    cap_add: [CHOWN, SETUID, SETGID, FOWNER, DAC_OVERRIDE]
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      DB_APP_PASSWORD: ${DB_APP_PASSWORD}
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./postgres/init.sh:/docker-entrypoint-initdb.d/init.sh:ro
+    networks: [backend]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    <<: *hardening
+    build: ./app
+    environment:
+      DB_HOST: db
+      DB_NAME: ${POSTGRES_DB}
+      DB_USER: fleet_app
+      DB_PASSWORD: ${DB_APP_PASSWORD}
+    depends_on:
+      db: {condition: service_healthy}
+    read_only: true
+    tmpfs: [/tmp]
+    networks: [frontend, backend, monitoring]
+
+  pgadmin:
+    <<: *hardening
+    image: dpage/pgadmin4:8
+    cap_add: [CHOWN, SETUID, SETGID, DAC_OVERRIDE, FOWNER]
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
+      PGADMIN_CONFIG_SERVER_MODE: "True"
+      PGADMIN_SERVER_JSON_FILE: /pgadmin4/servers.json
+    volumes:
+      - pgadmindata:/var/lib/pgadmin
+      - ./postgres/servers.json:/pgadmin4/servers.json:ro
+    depends_on:
+      db: {condition: service_healthy}
+    networks: [frontend, backend]
+
+  nginx:
+    <<: *hardening
+    build: ./nginx
+    ports:
+      - "80:8080"
+      - "443:8443"
+    read_only: true
+    tmpfs: [/tmp]
+    depends_on: [app]
+    networks: [frontend, monitoring]
+
+networks:
+  frontend:
+  backend:
+    internal: true      # DB không ra được Internet và không truy cập được từ ngoài
+  monitoring:
+    internal: true
+
+volumes:
+  pgdata:
+  pgadmindata:
