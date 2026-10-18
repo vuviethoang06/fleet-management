@@ -1,0 +1,13 @@
+global:
+  scrape_interval: 15s
+scrape_configs:
+  - job_name: prometheus
+    static_configs: [{targets: ['prometheus:9090']}]
+  - job_name: containers          # CPU/RAM/network từng container
+    static_configs: [{targets: ['cadvisor:8080']}]
+  - job_name: nginx               # web server
+    static_configs: [{targets: ['nginx-exporter:9113']}]
+  - job_name: postgres            # database
+    static_configs: [{targets: ['postgres-exporter:9187']}]
+  - job_name: fleet-app           # metrics nghiệp vụ của ứng dụng
+    static_configs: [{targets: ['app:8000']}]
