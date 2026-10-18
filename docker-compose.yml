@@ -1,4 +1,5 @@
 # Đề 30 - Fleet Management System | Triển khai bằng Docker Compose
+name: fleet
 x-hardening: &hardening
   security_opt: ["no-new-privileges:true"]
   cap_drop: ["ALL"]
@@ -126,6 +127,30 @@ services:
     depends_on: [prometheus]
     networks: [frontend, monitoring]
 
+  # ---------- COMMIT 3: Loki + Promtail (log tập trung) ----------
+  loki:
+    <<: *hardening
+    image: grafana/loki:3.1.0
+    user: "10001:10001"
+    command: ["-config.file=/etc/loki/loki.yml"]
+    volumes:
+      - ./loki/loki.yml:/etc/loki/loki.yml:ro
+      - lokidata:/loki
+    networks: [monitoring]
+
+  promtail:
+    <<: *hardening
+    image: grafana/promtail:3.1.0
+    cap_drop: []          # cần đọc docker.sock và log container của host (xem mục Hardening trong báo cáo)
+    user: root
+    command: ["-config.file=/etc/promtail/promtail.yml"]
+    volumes:
+      - ./promtail/promtail.yml:/etc/promtail/promtail.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    depends_on: [loki]
+    networks: [monitoring]
+
 networks:
   frontend:
   backend:
@@ -138,3 +163,4 @@ volumes:
   pgadmindata:
   promdata:
   grafanadata:
+  lokidata:
